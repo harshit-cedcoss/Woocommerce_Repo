@@ -1,0 +1,24 @@
+/*
+ Theme Name:     Storefront Child Theme
+ Theme URI:      https://www.elegantthemes.com/gallery/divi/
+ Description:    Storefront Child Theme
+ Author:         Harshit
+ Author URI:     https://www.elegantthemes.com
+ Template:       storefront
+ Version:        1.0.0
+*/
+ 
+/* =Theme customization starts here
+------------------------------------------------------- */
+.form-row.woocommerce-invalid .chzn-single,
+.form-row.woocommerce-invalid .chzn-drop,
+.form-row.woocommerce-invalid input.input-text,
+.form-row.woocommerce-invalid select {
+    border:1px solid red;
+}
+.form-row.woocommerce-validated .chzn-single,
+.form-row.woocommerce-validated .chzn-drop,
+.form-row.woocommerce-validated input.input-text,
+.form-row.woocommerce-validated select {
+    border:1px solid green;
+}
