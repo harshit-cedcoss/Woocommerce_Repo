@@ -8,7 +8,7 @@
  * Author URI: http://yourdomain.com/
  * Developer: Harshit
  * Developer URI: http://yourdomain.com/
- * Text Domain: reward-points-extention
+ * Text Domain: custom-payment-gateway
  * Domain Path: /languages
  *
  * Woo: 12345:342928dfsfhsf8429842374wdf4234sfd
