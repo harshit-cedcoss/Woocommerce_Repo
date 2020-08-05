@@ -68,7 +68,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 			}
 
 			/**
-			 * Initialize gateway settings form fields
+			 * Initialize gateway settings form fields.
 			 */
 			public function init_form_fields() {
 				$this->form_fields = apply_filters(
