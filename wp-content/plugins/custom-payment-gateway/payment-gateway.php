@@ -145,15 +145,15 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 				// I recommend to use inique IDs, because other gateways could already use #ccNo, #expdate, #cvc.
 				echo '<div class="form-row form-row-wide"><label>Card Number <span class="required">*</span></label>
-					<input id="CPG_ccNo" type="text" autocomplete="off">
+					<input id="CPG_ccNo" name="CPG_ccNo" type="text" autocomplete="off">
 					</div>
 					<div class="form-row form-row-first">
 						<label>Expiry Date <span class="required">*</span></label>
-						<input id="CPG_expdate" type="text" autocomplete="off" placeholder="MM / YY">
+						<input id="CPG_expdate" name="CPG_expdate" type="text" autocomplete="off" placeholder="MM / YY">
 					</div>
 					<div class="form-row form-row-last">
 						<label>Card Code (CVC) <span class="required">*</span></label>
-						<input id="CPG_cvv" type="password" autocomplete="off" placeholder="CVC">
+						<input id="CPG_cvv" name="CPG_cvv" type="password" autocomplete="off" placeholder="CVC">
 					</div>
 					<div class="clear"></div>';
 
@@ -171,13 +171,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				if ( empty( $_POST['CPG_ccNo'] ) ) {
 					wc_add_notice( 'Card number is required!', 'error' );
 					return false;
-				}
-				if ( empty( $_POST['CPG_expdate'] ) ) {
-					wc_add_notice( 'Card number is required!', 'error' );
+				} elseif ( empty( $_POST['CPG_expdate'] ) ) {
+					wc_add_notice( 'Expiry date is required!', 'error' );
 					return false;
-				}
-				if ( empty( $_POST['CPG_cvv'] ) ) {
-					wc_add_notice( 'Card number is required!', 'error' );
+				} elseif ( empty( $_POST['CPG_cvv'] ) ) {
+					wc_add_notice( 'CVV number is required!', 'error' );
 					return false;
 				}
 				return true;
