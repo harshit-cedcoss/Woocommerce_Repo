@@ -27,7 +27,7 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 				'label'       => __( 'Ratings', '' ),
 				'description' => __( 'Rate this product from 1 to 5', '' ),
 				'desc_tip'    => true,
-				'type'        => 'number',
+				'type'        => 'float',
 			)
 		);
 		echo '</div>';
@@ -184,21 +184,23 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 	add_action( 'woocommerce_after_add_to_cart_button', 'display_active_fields', 10 );
 
 	/**
-	 * Getting the Product Remark on cart page.
+	 * Getting the Product's Remark on product page.
 	 */
 	function get_product_remark( $cart_item_data ) {
 
 		$remark = filter_input( INPUT_POST, 'remark' );
+		$remark = isset( $_POST['remark'] ) ? $_POST['remark'] : '';
 		if ( empty( $remark ) ) {
 
 			return $cart_item_data;
 
 		}
 		$cart_item_data['remark'] = $remark;
+		//print_r( $cart_item );die;
 		return $cart_item_data;
 
 	}
-	add_filter( 'woocommerce_add_cart_item_data', 'get_product_remark', 10, 3 );
+	add_filter( 'woocommerce_add_cart_item_data', 'get_product_remark', 10, 1 );
 
 	/**
 	 * Display the Product Remark on cart page.
@@ -214,14 +216,100 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 			return $item_data;
 
 		}
+		//print_r( $item_data );
 		$item_data[] = array(
 			'key'     => __( 'Remark', '' ),
 			'value'   => wc_clean( $cart_item['remark'] ),
 			'display' => '',
 		);
-
+		//print_r( $item_data );
+		//print_r( $cart_item );die;
 		return $item_data;
 	}
 	add_filter( 'woocommerce_get_item_data', 'display_product_remark', 10, 2 );
 
 }
+
+// echo '<pre>';
+// var_dump(curl_version());
+// echo '</pre>';
+
+/**
+ * Woocommere Mailchimp Integration
+ */
+function mailchimp_integration() {
+
+	$api_key        = 'b407f3bd7139bc14ff72eaa1ab5a257a-us17';
+	$list_id        = 'abe3b053be';
+	$subsciber_hash = md5( strtolower( $_POST['email'] ) );
+	$data_center    = 'us17';
+	// print_r( $_POST );die;
+	$url  = 'https://' . $data_center . '.api.mailchimp.com/3.0/lists/' . $list_id . '/members/' . $subsciber_hash; // endpoint.
+	$data = array(
+		'email_address' => $_POST['email'],
+		'status'        => 'subscribed', // subscribed, unsubscribed, cleaned, pending.
+		'merge_fields'  => array(
+			'FNAME' => $_POST['username'],
+			'LNAME' => '',
+		),
+		// 'email_address' => 'shantanu12@gmail.com',
+		// 'status'        => 'subscribed',
+		// 'merge_fields'  => array(
+		// 'FNAME' => 'Shantanu',
+		// 'LNAME' => 'Kumar',
+		// ),
+	);
+	$json = json_encode( $data );
+																	// Integration using PHP cURL.
+	/*
+	$ch = curl_init();
+	curl_setopt( $ch, CURLOPT_URL, $url );
+	curl_setopt( $ch, CURLOPT_USERPWD, 'user:' . $api_key );
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json' ) );
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+	curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
+	curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'PUT' );
+	curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, $json );
+
+	$result = curl_exec( $ch );
+	$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+
+	if ( false === $result ) {
+		echo 'Error Number:' . curl_errno( $ch ) . '<br>';
+		echo 'Error String:' . curl_error( $ch );
+	}
+
+	curl_close( $ch );
+
+	return $http_code . $result;
+	*/
+																		// Integration using wp_remote_post().
+	$basic_auth = 'Basic ' . base64_encode( 'user:' . $api_key );
+	$options    = array(
+		'method'      => 'PUT',
+		'timeout'     => 10,
+	//	'redirection' => 5,
+	//	'blocking'    => true,
+		'body'        => $json,
+		'headers'     => array(
+			'Content-Type'  => 'application/json',
+			'Authorization' => $basic_auth,
+		),
+		'cookies'     => array(),
+		'sslverify'   => false,
+	);
+
+	$response = wp_remote_post( $url, $options );
+
+	if ( is_wp_error( $response ) ) {
+		$error_message = $response->get_error_message();
+		echo 'Something went wrong:' . $error_message;
+	} else {
+		echo 'Response:<pre>';
+		print_r( $response );
+		echo '</pre>';
+	}
+}
+//echo mailchimp_integration();
+add_action( 'user_register', 'mailchimp_integration' );
