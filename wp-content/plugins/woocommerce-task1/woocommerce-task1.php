@@ -362,6 +362,7 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 			if ( $last_order ) {
 				//die("die");
 				?>
+				<h2 class="woocommerce-order-details__title"><?php esc_html_e( 'Last Order details', 'woocommerce' ); ?></h2><br/>
 				<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table" >
 					<thead>
 						<tr>
