@@ -49,7 +49,7 @@ function storefront_custom_post_type() {
 		'search_items'          => __( 'Search SF Product', 'storefront' ),
 		'not_found'             => __( 'No storefront product found', 'storefront' ),
 		'not_found_in_trash'    => __( 'No storefront products found in trash', 'storefront' ),
-		'parent_items_colon'    => __( 'Parent Product', 'storefront' ),
+	//	'parent_items_colon'    => __( 'Parent Product', 'storefront' ),
 		'archives'              => __( 'Archives', 'storefront' ),
 		'attributes'            => __( 'Attributes', 'storefront' ),
 		'insert_into_item'      => __( 'Insert into Product', 'storefront' ),

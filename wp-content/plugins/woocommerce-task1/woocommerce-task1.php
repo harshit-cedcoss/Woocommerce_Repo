@@ -17,6 +17,15 @@
 if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) ) {
 
 	/**
+	 * Define constants
+	 */
+	if ( ! defined( 'PLUGIN_VERSION' ) ) {
+		define( 'PLUGIN_VERSION', '1.0.0' );
+	}
+	if ( ! defined( 'PLUGIN_DIR_PATH' ) ) {
+		define( 'PLUGIN_DIR_PATH', plugin_dir_path( __FILE__ ) );
+	}
+	/**
 	 * Function to add a field of Rating in the general tab (Product-data Settings).
 	 */
 	function add_rating_field() {
@@ -188,7 +197,7 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 	 */
 	function get_product_remark( $cart_item_data ) {
 
-		$remark = filter_input( INPUT_POST, 'remark' );
+	//	$remark = filter_input( INPUT_POST, 'remark' );
 		$remark = isset( $_POST['remark'] ) ? $_POST['remark'] : '';
 		if ( empty( $remark ) ) {
 
@@ -416,4 +425,77 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 		}
 	}
 	add_action( 'woocommerce_account_last-order_endpoint', 'my_account_endpoint_content' );
+
+	/**
+	 * Class for adding a new Feedback Settings tab
+	 */
+	require PLUGIN_DIR_PATH . '/classes/class-wc-feedback-settings-tab.php';
+
+	/**
+	 * Adding feedback form in frontend.
+	 *
+	 * @param [type] $order_id gives the order id.
+	 * @return void
+	 */
+	function feedback_form( $order_id ) {
+
+		if ( isset( $_POST['feedback_comment'] ) && isset( $_POST['submit_feedback'] ) ) {
+			//die;
+			wc_add_notice( 'Thanyou! Your Feedback haas been submitted', 'success' );
+			$feedback = sanitize_textarea_field( wp_unslash( $_POST['feedback_comment'] ) );
+			if ( is_user_logged_in() ) {
+
+				$current_user = wp_get_current_user();
+				$email        = $current_user->user_email;
+				update_user_meta( get_current_user_id(), 'feedback', $feedback );
+				update_user_meta( get_current_user_id(), 'email', $email );
+				wp_mail( $email, 'Feedback', $feedback );
+
+			} else {
+				//die("kjdv");
+				$email = isset( $_POST['email'] ) ? sanitize_textarea_field( wp_unslash( $_POST['email'] ) ) : '';
+				$name  = isset( $_POST['name'] ) ? sanitize_textarea_field( wp_unslash( $_POST['name'] ) ) : '';
+				$phone = isset( $_POST['phone'] ) ? sanitize_textarea_field( wp_unslash( $_POST['phone'] ) ) : '';
+				// update_user_meta( $email, 'feedback', $feedback );
+				// update_user_meta( $email, 'name', $name );
+				// update_user_meta( $email, 'phone', $phone );
+				wp_mail( $email, 'Feedback', $feedback );
+			}
+		}
+		if ( 'yes' === get_option( 'wc_feedback_tab_enable' ) ) {
+
+			$form = '<h2>What do you think about Your Shopping Experience</h2>
+			<form id="thankyou_feedback_form" action="" method="POST">';
+
+			if ( is_user_logged_in() ) {
+
+				$form .= '<textarea name="feedback_comment" placeholder="Give your feedback here."></textarea></br></br>
+				<input type="hidden" name="action" value="collect_feedback" />
+				<input type="hidden" name="order_id" value="' . esc_html( $order_id ) . '" />
+				<input type="submit" name="submit_feedback" value="Submit" />
+				</form>';
+
+			} else {
+				if ( 'yes' === get_option( 'wc_feedback_tab_name' ) ) {
+
+					$form .= '<input type="text" name="name" placeholder="Name"/></br></br>';
+				}
+				if ( 'yes' === get_option( 'wc_feedback_tab_email' ) ) {
+
+					$form .= '<input type="text" name="email" placeholder="E-mail"/></br></br>';
+				}
+				if ( 'yes' === get_option( 'wc_feedback_tab_phone' ) ) {
+
+					$form .= '<input type="text" name="phone" placeholder="Phone Number"/></br></br>';
+				}
+				$form .= '<textarea name="feedback_comment" placeholder="Give your feedback here."></textarea></br></br>
+					<input type="hidden" name="action" value="collect_feedback" />
+					<input type="hidden" name="order_id" value="' . esc_html( $order_id ) . '" />
+					<input type="submit" name="submit_feedback" value="Submit" />
+					</form>';
+			}
+			echo $form;
+		}
+	}
+	add_action( 'woocommerce_thankyou', 'feedback_form', 10 );
 }

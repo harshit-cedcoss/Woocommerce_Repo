@@ -4,14 +4,14 @@
  *
  * @package Woo Commerce
  */
-class WC_Settings_Tab_Demo {
+class WC_Feedback_Settings_Tab {
 	/**
 	 * Bootstraps the class and hooks required actions & filters.
 	 */
 	public static function init() {
 		add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
-		add_action( 'woocommerce_settings_tabs_settings_tab_demo', __CLASS__ . '::settings_tab' );
-		add_action( 'woocommerce_update_options_settings_tab_demo', __CLASS__ . '::update_settings' );
+		add_action( 'woocommerce_settings_tabs_feedback_tab', __CLASS__ . '::settings_tab' );
+		add_action( 'woocommerce_update_options_feedback_tab', __CLASS__ . '::update_settings' );
 	}
 
 	/**
@@ -21,7 +21,7 @@ class WC_Settings_Tab_Demo {
 	 * @return array $settings_tabs Array of WooCommerce setting tabs & their labels, including the Subscription tab.
 	 */
 	public static function add_settings_tab( $settings_tabs ) {
-		$settings_tabs['settings_tab_demo'] = __( 'Settings Demo Tab', 'woocommerce-settings-tab-demo' );
+		$settings_tabs['feedback_tab'] = __( 'Feedback Tab', 'woocommerce-feedback-tab' );
 		return $settings_tabs;
 	}
 
@@ -53,30 +53,42 @@ class WC_Settings_Tab_Demo {
 	public static function get_settings() {
 		$settings = array(
 			'section_title' => array(
-				'name' => __( 'Section Title', 'woocommerce-settings-tab-demo' ),
+				'name' => __( 'Feedback', 'woocommerce-feedback-tab' ),
 				'type' => 'title',
-				'desc' => '',
-				'id'   => 'wc_settings_tab_demo_section_title',
+				'desc' => 'Shopping Experience Feedback',
+				'id'   => 'wc_feedback_tab_section_title',
 			),
-			'title'         => array(
-				'name' => __( 'Title', 'woocommerce-settings-tab-demo' ),
+			'enable'         => array(
+				'name' => __( 'Enable/Disable', 'woocommerce-feedback-tab' ),
 				'type' => 'checkbox',
-				'desc' => __( 'This is some helper text', 'woocommerce-settings-tab-demo' ),
-				'id'   => 'wc_settings_tab_demo_title',
+				'desc' => __( 'Tick to enable the Feedback form', 'woocommerce-feedback-tab' ),
+				'id'   => 'wc_feedback_tab_enable',
 			),
-			'description'   => array(
-				'name' => __( 'Description', 'woocommerce-settings-tab-demo' ),
-				'type' => 'textarea',
-				'desc' => __( 'This is a paragraph describing the setting. Lorem ipsum yadda yadda yadda. Lorem ipsum yadda yadda yadda. Lorem ipsum yadda yadda yadda. Lorem ipsum yadda yadda yadda.', 'woocommerce-settings-tab-demo' ),
-				'id'   => 'wc_settings_tab_demo_description',
+			'name'         => array(
+				'name' => __( 'Name', 'woocommerce-feedback-tab' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Enable the Name field', 'woocommerce-feedback-tab' ),
+				'id'   => 'wc_feedback_tab_name',
+			),
+			'email'         => array(
+				'name' => __( 'E-mail', 'woocommerce-feedback-tab' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Enable the E-mail field', 'woocommerce-feedback-tab' ),
+				'id'   => 'wc_feedback_tab_email',
+			),
+			'phone'   => array(
+				'name' => __( 'Phone Number', 'woocommerce-feedback-tab' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Enable the Phone Number field', 'woocommerce-feedback-tab' ),
+				'id'   => 'wc_feedback_tab_phone',
 			),
 			'section_end'   => array(
 				'type' => 'sectionend',
-				'id'   => 'wc_settings_tab_demo_section_end',
+				'id'   => 'wc_feedback_tab_section_end',
 			),
 		);
-		return apply_filters( 'wc_settings_tab_demo_settings', $settings );
+		return apply_filters( 'wc_feedback_tab_settings', $settings );
 	}
 
 }
-WC_Settings_Tab_Demo::init();
+WC_Feedback_Settings_Tab::init();
