@@ -456,9 +456,9 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 				$email = isset( $_POST['email'] ) ? sanitize_textarea_field( wp_unslash( $_POST['email'] ) ) : '';
 				$name  = isset( $_POST['name'] ) ? sanitize_textarea_field( wp_unslash( $_POST['name'] ) ) : '';
 				$phone = isset( $_POST['phone'] ) ? sanitize_textarea_field( wp_unslash( $_POST['phone'] ) ) : '';
-				// update_user_meta( $email, 'feedback', $feedback );
-				// update_user_meta( $email, 'name', $name );
-				// update_user_meta( $email, 'phone', $phone );
+				// update_user_meta( get_current_user_id(), 'feedback', $feedback );
+				// update_user_meta( get_current_user_id(), 'name', $name );
+				// update_user_meta( get_current_user_id(), 'phone', $phone );
 				wp_mail( $email, 'Feedback', $feedback );
 			}
 		}
