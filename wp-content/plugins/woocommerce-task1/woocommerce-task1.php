@@ -497,5 +497,114 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 			echo $form;
 		}
 	}
-	add_action( 'woocommerce_thankyou', 'feedback_form', 10 );
+	//add_action( 'woocommerce_thankyou', 'feedback_form', 10 );
+
+	/**
+	 * Creating a shortcode for feedback form.
+	 */
+	function feedback_form_shortcode() {
+
+		if ( 'yes' === get_option( 'wc_feedback_tab_enable' ) ) {
+
+			if ( isset( $_POST['feedback_comment'] ) && isset( $_POST['submit_feedback'] ) ) {
+
+				$args = array();
+				if ( 'yes' === get_option( 'wc_feedback_tab_field1_enable' ) ) {
+					$label          = get_option( 'wc_feedback_tab_field1_label' );
+					$args[ $label ] = isset( $_POST[ $label ] ) ? $_POST[ $label ] : '';
+				}
+				if ( 'yes' === get_option( 'wc_feedback_tab_field2_enable' ) ) {
+					$label          = get_option( 'wc_feedback_tab_field2_label' );
+					$args[ $label ] = isset( $_POST[ $label ] ) ? $_POST[ $label ] : '';
+				}
+				if ( 'yes' === get_option( 'wc_feedback_tab_field3_enable' ) ) {
+					$label          = get_option( 'wc_feedback_tab_field3_label' );
+					$args[ $label ] = isset( $_POST[ $label ] ) ? $_POST[ $label ] : '';
+				}
+				if ( 'yes' === get_option( 'wc_feedback_tab_field4_enable' ) ) {
+					$label          = get_option( 'wc_feedback_tab_field4_label' );
+					$args[ $label ] = isset( $_POST[ $label ] ) ? $_POST[ $label ] : '';
+				}
+				if ( 'yes' === get_option( 'wc_feedback_tab_field5_enable' ) ) {
+					$label          = get_option( 'wc_feedback_tab_field5_label' );
+					$args[ $label ] = isset( $_POST[ $label ] ) ? $_POST[ $label ] : '';
+				}
+				$args['feedback_comment'] = sanitize_text_field( wp_unslash( $_POST['feedback_comment'] ) );
+				update_user_meta( get_current_user_id(), 'feedback', $args );
+				//wc_add_notice( 'Thanyou! Your Feedback haas been submitted', 'success' );
+				foreach ( $args as $key => $value ) {
+					if ( 1 === preg_match( '/name$/', $key ) ) {
+						$name = isset( $name ) ? $name . ' ' . $value : $value;
+					}
+					if ( 1 === preg_match( '/[0-9]{10}/', $value ) ) {
+						$phn = $value;
+					}
+					if ( 1 === preg_match( '/@{1}/', $value ) ) {
+						$email = $value;
+					}
+					if ( 1 === preg_match( '/address/i', $key ) ) {
+						$address = $value;
+					}
+				}
+				$admin_email = get_bloginfo( 'admin_email' );
+				$msg         = 'Feedback: ' . $args['feedback_comment'];
+				$headers     = array(
+					'Content-type:text/html;charset=UTF-8' . "\r\n",
+					'From: ' . $name . ' <' . $email . '> ' . "\r\n",
+					'Address: ' . $address  . "\r\n",
+				);
+				if ( wp_mail( $admin_email, 'Feedback', $msg, $headers ) ) {
+					wc_add_notice( 'Mail has been send to the Site Admin', 'success' );
+				} else {
+					wc_add_notice( 'Error sending Email to Site Admin', 'error' );
+				}
+				$msg_user    = 'Your Feedback has been sent to the Admin <' . $admin_email . '>';
+				$header_user = 'From: <' . $email . '> ' . "\r\n";
+				wp_mail( $email, 'Feedback Confirmation', $msg_user, $header_user );
+
+			}
+			// 8009551014,9889065458
+
+			$form = '<h2>What do you think about Your Shopping Experience</h2>
+					<form id="thankyou_feedback_form" action="" method="POST">';
+
+			if ( 'yes' === get_option( 'wc_feedback_tab_field1_enable' ) && ! empty( get_option( 'wc_feedback_tab_field1_label' ) && ! empty( get_option( 'wc_feedback_tab_field1_type' ) ) ) ) {
+
+				$form .= '<input type="' . get_option( 'wc_feedback_tab_field1_type' ) . '" name="' . get_option( 'wc_feedback_tab_field1_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field1_label' ) . '"/></br></br>';
+			}
+			if ( 'yes' === get_option( 'wc_feedback_tab_field2_enable' ) && ! empty( get_option( 'wc_feedback_tab_field2_label' ) && ! empty( get_option( 'wc_feedback_tab_field2_type' ) ) ) ) {
+
+				$form .= '<input type="' . get_option( 'wc_feedback_tab_field2_type' ) . '" name="' . get_option( 'wc_feedback_tab_field2_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field2_label' ) . '"/></br></br>';
+			}
+			if ( 'yes' === get_option( 'wc_feedback_tab_field3_enable' ) && ! empty( get_option( 'wc_feedback_tab_field3_label' ) && ! empty( get_option( 'wc_feedback_tab_field3_type' ) ) ) ) {
+
+				$form .= '<input type="' . get_option( 'wc_feedback_tab_field3_type' ) . '" name="' . get_option( 'wc_feedback_tab_field3_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field3_label' ) . '"/></br></br>';
+			}
+			if ( 'yes' === get_option( 'wc_feedback_tab_field4_enable' ) && ! empty( get_option( 'wc_feedback_tab_field4_label' ) && ! empty( get_option( 'wc_feedback_tab_field4_type' ) ) ) ) {
+
+				$form .= '<input type="' . get_option( 'wc_feedback_tab_field4_type' ) . '" name="' . get_option( 'wc_feedback_tab_field4_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field4_label' ) . '"/></br></br>';
+			}
+			if ( 'yes' === get_option( 'wc_feedback_tab_field5_enable' ) && ! empty( get_option( 'wc_feedback_tab_field5_label' ) && ! empty( get_option( 'wc_feedback_tab_field5_type' ) ) ) ) {
+
+				$form .= '<input type="' . get_option( 'wc_feedback_tab_field5_type' ) . '" name="' . get_option( 'wc_feedback_tab_field5_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field5_label' ) . '"/></br></br>';
+			}
+			$form .= '<textarea name="feedback_comment" placeholder="Give your feedback here."></textarea></br></br>
+					<input type="hidden" name="action" value="collect_feedback" />
+					<input type="submit" name="submit_feedback" value="Submit" />
+					</form>';
+			return $form;
+		}
+	}
+	add_shortcode( 'feeback_form', 'feedback_form_shortcode' );
+
+	add_action( 'phpmailer_init', 'my_phpmailer_example' );
+	function my_phpmailer_example( $phpmailer ) {
+		$phpmailer->isSMTP();
+		$phpmailer->Host       = 'smtp.gmail.com';
+		$phpmailer->SMTPAuth   = false; // Ask it to use authenticate using the Username and Password properties.
+		$phpmailer->Port       = 25;
+		$phpmailer->Username   = 'mysteryhax0r1337@gmail.com';
+	//	$phpmailer->Password   = '';
+		$phpmailer->SMTPSecure = 'tls'; // Choose 'ssl' for SMTPS on port 465, or 'tls' for SMTP+STARTTLS on port 25 or 587.
+	}
 }
