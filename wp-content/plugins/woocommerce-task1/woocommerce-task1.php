@@ -619,7 +619,7 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 		$phpmailer->SMTPAuth   = true; // Ask it to use authenticate using the Username and Password properties.
 		$phpmailer->Port       = 25;
 		$phpmailer->Username   = 'mysteryhax0r1337@gmail.com';
-		$phpmailer->Password   = 'yAHOO1234567';
+		$phpmailer->Password   = '';
 		$phpmailer->SMTPSecure = 'tls'; // Choose 'ssl' for SMTPS on port 465, or 'tls' for SMTP+STARTTLS on port 25 or 587.
 	}
 	add_action( 'phpmailer_init', 'my_phpmailer_example' );
