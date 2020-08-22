@@ -551,7 +551,7 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 				$headers     = array(
 					'Content-type:text/html;charset=UTF-8' . "\r\n",
 					'From: ' . $name . ' <' . $email . '> ' . "\r\n",
-					'Address: ' . $address  . "\r\n",
+					'Address: ' . $address . "\r\n",
 				);
 				if ( wp_mail( $admin_email, 'Feedback', $msg, $headers ) ) {
 					wc_add_notice( 'Mail has been send to the Site Admin', 'success' );
@@ -563,31 +563,41 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 				wp_mail( $email, 'Feedback Confirmation', $msg_user, $header_user );
 
 			}
-			// 8009551014,9889065458
-
+			// print_r( $_POST );
 			$form = '<h2>What do you think about Your Shopping Experience</h2>
 					<form id="thankyou_feedback_form" action="" method="POST">';
 
-			if ( 'yes' === get_option( 'wc_feedback_tab_field1_enable' ) && ! empty( get_option( 'wc_feedback_tab_field1_label' ) && ! empty( get_option( 'wc_feedback_tab_field1_type' ) ) ) ) {
+			for ( $i = 1; $i <= 5; $i++ ) {
 
-				$form .= '<input type="' . get_option( 'wc_feedback_tab_field1_type' ) . '" name="' . get_option( 'wc_feedback_tab_field1_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field1_label' ) . '"/></br></br>';
-			}
-			if ( 'yes' === get_option( 'wc_feedback_tab_field2_enable' ) && ! empty( get_option( 'wc_feedback_tab_field2_label' ) && ! empty( get_option( 'wc_feedback_tab_field2_type' ) ) ) ) {
+				if ( 1 !== preg_match( '/feedback|comment/i', get_option( 'wc_feedback_tab_field' . $i . '_label' ) ) ) {
+					if ( 'yes' === get_option( 'wc_feedback_tab_field' . $i . '_enable' ) && ! empty( get_option( 'wc_feedback_tab_field' . $i . '_label' ) && ! empty( get_option( 'wc_feedback_tab_field' . $i . '_type' ) ) ) ) {
 
-				$form .= '<input type="' . get_option( 'wc_feedback_tab_field2_type' ) . '" name="' . get_option( 'wc_feedback_tab_field2_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field2_label' ) . '"/></br></br>';
+						$form .= '<input type="' . get_option( 'wc_feedback_tab_field' . $i . '_type' ) . '" name="' . get_option( 'wc_feedback_tab_field' . $i . '_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field' . $i . '_label' ) . '"/></br></br>';
+					}
+				} else {
+					continue;
+				}
 			}
-			if ( 'yes' === get_option( 'wc_feedback_tab_field3_enable' ) && ! empty( get_option( 'wc_feedback_tab_field3_label' ) && ! empty( get_option( 'wc_feedback_tab_field3_type' ) ) ) ) {
+			// if ( 'yes' === get_option( 'wc_feedback_tab_field1_enable' ) && ! empty( get_option( 'wc_feedback_tab_field1_label' ) && ! empty( get_option( 'wc_feedback_tab_field1_type' ) ) ) ) {
 
-				$form .= '<input type="' . get_option( 'wc_feedback_tab_field3_type' ) . '" name="' . get_option( 'wc_feedback_tab_field3_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field3_label' ) . '"/></br></br>';
-			}
-			if ( 'yes' === get_option( 'wc_feedback_tab_field4_enable' ) && ! empty( get_option( 'wc_feedback_tab_field4_label' ) && ! empty( get_option( 'wc_feedback_tab_field4_type' ) ) ) ) {
+			// 	$form .= '<input type="' . get_option( 'wc_feedback_tab_field1_type' ) . '" name="' . get_option( 'wc_feedback_tab_field1_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field1_label' ) . '"/></br></br>';
+			// }
+			// if ( 'yes' === get_option( 'wc_feedback_tab_field2_enable' ) && ! empty( get_option( 'wc_feedback_tab_field2_label' ) && ! empty( get_option( 'wc_feedback_tab_field2_type' ) ) ) ) {
 
-				$form .= '<input type="' . get_option( 'wc_feedback_tab_field4_type' ) . '" name="' . get_option( 'wc_feedback_tab_field4_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field4_label' ) . '"/></br></br>';
-			}
-			if ( 'yes' === get_option( 'wc_feedback_tab_field5_enable' ) && ! empty( get_option( 'wc_feedback_tab_field5_label' ) && ! empty( get_option( 'wc_feedback_tab_field5_type' ) ) ) ) {
+			// 	$form .= '<input type="' . get_option( 'wc_feedback_tab_field2_type' ) . '" name="' . get_option( 'wc_feedback_tab_field2_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field2_label' ) . '"/></br></br>';
+			// }
+			// if ( 'yes' === get_option( 'wc_feedback_tab_field3_enable' ) && ! empty( get_option( 'wc_feedback_tab_field3_label' ) && ! empty( get_option( 'wc_feedback_tab_field3_type' ) ) ) ) {
 
-				$form .= '<input type="' . get_option( 'wc_feedback_tab_field5_type' ) . '" name="' . get_option( 'wc_feedback_tab_field5_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field5_label' ) . '"/></br></br>';
-			}
+			// 	$form .= '<input type="' . get_option( 'wc_feedback_tab_field3_type' ) . '" name="' . get_option( 'wc_feedback_tab_field3_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field3_label' ) . '"/></br></br>';
+			// }
+			// if ( 'yes' === get_option( 'wc_feedback_tab_field4_enable' ) && ! empty( get_option( 'wc_feedback_tab_field4_label' ) && ! empty( get_option( 'wc_feedback_tab_field4_type' ) ) ) ) {
+
+			// 	$form .= '<input type="' . get_option( 'wc_feedback_tab_field4_type' ) . '" name="' . get_option( 'wc_feedback_tab_field4_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field4_label' ) . '"/></br></br>';
+			// }
+			// if ( 'yes' === get_option( 'wc_feedback_tab_field5_enable' ) && ! empty( get_option( 'wc_feedback_tab_field5_label' ) && ! empty( get_option( 'wc_feedback_tab_field5_type' ) ) ) ) {
+
+			// 	$form .= '<input type="' . get_option( 'wc_feedback_tab_field5_type' ) . '" name="' . get_option( 'wc_feedback_tab_field5_label' ) . '" placeholder="' . get_option( 'wc_feedback_tab_field5_label' ) . '"/></br></br>';
+			// }
 			$form .= '<textarea name="feedback_comment" placeholder="Give your feedback here."></textarea></br></br>
 					<input type="hidden" name="action" value="collect_feedback" />
 					<input type="submit" name="submit_feedback" value="Submit" />
@@ -597,14 +607,20 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 	}
 	add_shortcode( 'feeback_form', 'feedback_form_shortcode' );
 
-	add_action( 'phpmailer_init', 'my_phpmailer_example' );
+	/**
+	 * Provide a SMTP Server
+	 *
+	 * @param [object] $phpmailer with different networking properties.
+	 * @return void
+	 */
 	function my_phpmailer_example( $phpmailer ) {
 		$phpmailer->isSMTP();
 		$phpmailer->Host       = 'smtp.gmail.com';
-		$phpmailer->SMTPAuth   = false; // Ask it to use authenticate using the Username and Password properties.
+		$phpmailer->SMTPAuth   = true; // Ask it to use authenticate using the Username and Password properties.
 		$phpmailer->Port       = 25;
 		$phpmailer->Username   = 'mysteryhax0r1337@gmail.com';
-	//	$phpmailer->Password   = '';
+		$phpmailer->Password   = 'yAHOO1234567';
 		$phpmailer->SMTPSecure = 'tls'; // Choose 'ssl' for SMTPS on port 465, or 'tls' for SMTP+STARTTLS on port 25 or 587.
 	}
+	add_action( 'phpmailer_init', 'my_phpmailer_example' );
 }
