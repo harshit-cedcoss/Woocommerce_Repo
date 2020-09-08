@@ -148,3 +148,191 @@ function storefront_product_register_taxonomy_tags() {
 	register_taxonomy( 'storefront_product_tag', array( 'storefront_product' ), $args );
 }
 add_action( 'init', 'storefront_product_register_taxonomy_tags' );
+
+/**
+ * Adding  the custom fields in our custom taxonomy
+ */
+function add_custom_fields_ct() {
+	?>
+	<div class="form-field term-text-wrap">
+		<label><?php esc_html_e( 'Enter custom text', '' ); ?></label>
+		<input type="text" id="custom_text" class="postform" name="custom_text" />
+	</div>
+	<div class="form-field term-thumbnail-wrap">
+		<label><?php esc_html_e( 'Thumbnail', '' ); ?></label>
+		<div id="storefront_product_category_thumbnail" style="float: left; margin-right: 10px;"><img src="" width="60px" height="60px" /></div>
+		<div style="line-height: 60px;">
+			<input type="hidden" id="storefront_product_category_thumbnail_id" name="storefront_product_category_thumbnail_id" />
+			<button type="button" class="upload_image_button button"><?php esc_html_e( 'Upload/Add image', '' ); ?></button>
+			<button type="button" class="remove_image_button button"><?php esc_html_e( 'Remove image', '' ); ?></button>
+		</div>
+		<script type="text/javascript">
+
+				// Only show the "remove image" button when needed
+				if ( ! jQuery( '#storefront_product_category_thumbnail_id' ).val() ) {
+					//alert('working');
+						jQuery( '.remove_image_button' ).hide();
+					}
+					//alert( jQuery( '#storefront_product_category_thumbnail_id' ).val() );
+					// Uploading files
+					var file_frame;
+
+					jQuery( document ).on( 'click', '.upload_image_button', function( event ) {
+
+						event.preventDefault();
+
+						// If the media frame already exists, reopen it.
+						if ( file_frame ) {
+							file_frame.open();
+							//alert("working");
+							return;
+						}
+
+						// Create the media frame.
+						file_frame = wp.media.frames.downloadable_file = wp.media({
+							title: '<?php esc_html_e( 'Choose an image', '' ); ?>',
+							button: {
+								text: '<?php esc_html_e( 'Use image', '' ); ?>'
+							},
+							multiple: false
+						});
+
+						// When an image is selected, run a callback.
+						file_frame.on( 'select', function() {
+							var attachment           = file_frame.state().get( 'selection' ).first().toJSON();
+							var attachment_thumbnail = attachment.sizes.thumbnail || attachment.sizes.full;
+
+							jQuery( '#storefront_product_category_thumbnail_id' ).val( attachment.id );
+							jQuery( '#storefront_product_category_thumbnail' ).find( 'img' ).attr( 'src', attachment_thumbnail.url );
+							jQuery( '.remove_image_button' ).show();
+						});
+
+						// Finally, open the modal.
+						file_frame.open();
+					});
+
+					jQuery( document ).on( 'click', '.remove_image_button', function() {
+						jQuery( '#storefront_product_category_thumbnail' ).find( 'img' ).attr( 'src', '<?php echo __DIR__ . '/imgs/placeholder.png'; ?>' );
+						jQuery( '#storefront_product_category_thumbnail_id' ).val( '' );
+						jQuery( '.remove_image_button' ).hide();
+						return false;
+					});
+					// jQuery( document ).on( 'click', '#submit', function() {
+					// 	jQuery( '#storefront_product_category_thumbnail_id' ).val( '' );
+					// } );
+
+			</script>
+	</div>	
+	<?php
+}
+add_action( 'storefront_product_category_add_form_fields', 'add_custom_fields_ct' );
+
+/**
+ * Save the Custom fields in our custom taxonomy
+ *
+ * @param mixed $term_id Term ID to bbe saved.
+ * @param mixed $tt_id Term Taxonomy ID.
+ * @return void
+ */
+function save_custom_fields_ct( $term_id, $tt_id ) {
+
+	if ( isset( $_POST['custom_text'] ) ) {
+		update_term_meta( $term_id, 'custom_text_ct', esc_attr( $_POST['custom_text'] ) );
+	}
+	if ( isset( $_POST['storefront_product_category_thumbnail_id'] ) ) {
+		update_term_meta( $term_id, 'thumbnail_id_ct', esc_attr( $_POST['storefront_product_category_thumbnail_id'] ) );
+	}
+}
+add_action( 'created_storefront_product_category', 'save_custom_fields_ct', 10, 2 );
+add_action( 'edited_storefront_product_category', 'save_custom_fields_ct', 10, 2 );
+
+/**
+ * Edit the Custom fields in our custom taxonomy
+ *
+ * @param mixed $term Term (SF_category) being edited.
+ * @return void
+ */
+function edit_custom_field_ct( $term ) {
+	$ct_text         = get_term_meta( $term->term_id, 'custom_text_ct', true );
+	$ct_thumbnail_id = absint( get_term_meta( $term->term_id, 'thumbnail_id_ct', true ) );
+	// echo $ct_thumbnail_id;
+	// echo $ct_text;
+	// die;
+	//$image = wp_get_attachment_thumb_url( $ct_thumbnail_id );
+	if ( $ct_thumbnail_id ) {
+		$image = wp_get_attachment_thumb_url( $ct_thumbnail_id );
+	} else {
+		$image = __DIR__ . '/assets/images/placeholder.png';
+	}
+	//$image = wp_get_attachment_image_src( $ct_thumbnail_id );
+	?>
+	<tr class="form-field term-text-wrap">
+		<th scope="row" valign="top"><label><?php esc_html_e( 'Enter custom text', '' ); ?></label></th>
+		<td>
+			<input type="text" id="custom_text" class="postform" name="custom_text" value="<?php esc_html_e( $ct_text ); ?>" />
+		</td>
+	</tr>
+	<tr class="form-fiels term-thumbnail-wrap">
+		<th scope="row" valign="top"><label><?php esc_html_e( 'Thumbnail', '' ); ?></label></th>
+		<td>
+			<div id="storefront_product_category_thumbnail" style="float: left; margin-right: 10px;"><img src="<?php echo esc_attr( $image ); ?>" width="60px" height="60px" /></div>
+			<div style="line-height: 60px;">
+				<input type="hidden" id="storefront_product_category_thumbnail_id" name="storefront_product_category_thumbnail_id" />
+				<button type="button" class="upload_image_button button"><?php esc_html_e( 'Upload/Add image', '' ); ?></button>
+				<button type="button" class="remove_image_button button"><?php esc_html_e( 'Remove image', '' ); ?></button>
+			</div>
+			<script type="text/javascript">
+				// Only show the "remove image" button when needed
+				if ( ! jQuery( '#storefront_product_category_thumbnail_id' ).val() ) {
+						jQuery( '.remove_image_button' ).hide();
+					}
+
+					// Uploading files
+					var file_frame;
+
+					jQuery( document ).on( 'click', '.upload_image_button', function( event ) {
+
+						event.preventDefault();
+
+						// If the media frame already exists, reopen it.
+						if ( file_frame ) {
+							file_frame.open();
+							return;
+						}
+
+						// Create the media frame.
+						file_frame = wp.media.frames.downloadable_file = wp.media({
+							title: '<?php esc_html_e( 'Choose an image', '' ); ?>',
+							button: {
+								text: '<?php esc_html_e( 'Use image', '' ); ?>'
+							},
+							multiple: false
+						});
+
+						// When an image is selected, run a callback.
+						file_frame.on( 'select', function() {
+							var attachment           = file_frame.state().get( 'selection' ).first().toJSON();
+							var attachment_thumbnail = attachment.sizes.thumbnail || attachment.sizes.full;
+
+							jQuery( '#storefront_product_category_thumbnail_id' ).val( attachment.id );
+							jQuery( '#storefront_product_category_thumbnail' ).find( 'img' ).attr( 'src', attachment_thumbnail.url );
+							jQuery( '.remove_image_button' ).show();
+						});
+
+						// Finally, open the modal.
+						file_frame.open();
+					});
+
+					jQuery( document ).on( 'click', '.remove_image_button', function() {
+						jQuery( '#storefront_product_category_thumbnail' ).find( 'img' ).attr( 'src', '<?php echo __DIR__ . '/assets/images/placeholder.png'; ?>' );
+						jQuery( '#storefront_product_category_thumbnail_id' ).val( '' );
+						jQuery( '.remove_image_button' ).hide();
+						return false;
+					});
+
+			</script>
+		</td>
+	</tr>
+	<?php
+}
+add_action( 'storefront_product_category_edit_form_fields', 'edit_custom_field_ct' );

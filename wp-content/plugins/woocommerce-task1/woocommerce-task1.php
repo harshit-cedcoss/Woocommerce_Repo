@@ -269,6 +269,7 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 			// ),
 		);
 		$json = json_encode( $data );
+		//$url = 'https:google.com';
 																		// Integration using PHP cURL.
 		/*
 		$ch = curl_init();
@@ -563,7 +564,7 @@ if ( in_array( 'woocommerce/woocommerce.php', get_option( 'active_plugins' ) ) )
 				wp_mail( $email, 'Feedback Confirmation', $msg_user, $header_user );
 
 			}
-			// print_r( $_POST );
+			// print_r( $_SERVER );
 			$form = '<h2>What do you think about Your Shopping Experience</h2>
 					<form id="thankyou_feedback_form" action="" method="POST">';
 
